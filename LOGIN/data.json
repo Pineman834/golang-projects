@@ -1,0 +1,11 @@
+{
+    "users": [
+      {
+        "name": "Mimmo Baluyut",
+        "username": "mimmo",
+        "type": "Admin",
+        "age": 14,
+        "password": "Rockyou"
+      }
+    ]
+}
