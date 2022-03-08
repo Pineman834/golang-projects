@@ -3,10 +3,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
 	"log"
 	"os"
-
-	"github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
@@ -29,9 +28,10 @@ func main() {
 		Addr:   "127.0.0.1:3306",
 		DBName: "users",
 	}
+	fmt.Println(cfg.FormatDSN())
 	// Get a database handle.
 	var err error
-	db, err = sql.Open("mysql", cfg.FormatDSN())
+	db, err = sql.Open("mysql", "root:terminator21@/users")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,17 +41,17 @@ func main() {
 		log.Fatal(pingErr)
 	}
 	fmt.Println("Connected!")
-	albums, err := UserByName("Mimmo Baluyut")
+	users, err := UserByName("Mimmo Baluyut")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Albums found: %v\n", albums)
+	fmt.Printf("User found: %v\n", users)
 }
 
 func UserByName(name string) ([]User, error) {
 	var users []User
 
-	rows, err := db.Query("SELECT * FROM users WHERE name = ?", name)
+	rows, err := db.Query("SELECT * FROM user WHERE name = ?", name)
 	if err != nil {
 		return nil, fmt.Errorf("albumsByArtist %q: %v", name, err)
 	}
