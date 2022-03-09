@@ -3,9 +3,10 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
 	"log"
 	"os"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
@@ -41,30 +42,75 @@ func main() {
 		log.Fatal(pingErr)
 	}
 	fmt.Println("Connected!")
-	users, err := UserByName("Mimmo Baluyut")
-	if err != nil {
-		log.Fatal(err)
+	// users, err := UserByName("Mimmo Baluyut")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Printf("User found: %v\n", users)
+
+	fmt.Println("Login(1) or create user(2)?")
+	fmt.Print("| => ")
+	var choice int
+	fmt.Scanln(&choice)
+	if choice == 1 {
+		fmt.Println("Enter Username:")
+		fmt.Print("| => ")
+		var username string
+		fmt.Scanln(&username)
+
+		fmt.Println("Enter Password:")
+		fmt.Print("| => ")
+		var password string
+		fmt.Scanln(&password)
+
+		if login(username, password) != nil {
+			fmt.Println("Login success")
+		} else {
+			fmt.Println("Login failed")
+		}
+	} else if choice == 2 {
+		// TODO: Create user
 	}
-	fmt.Printf("User found: %v\n", users)
 }
 
-func UserByName(name string) ([]User, error) {
+func login(liveusername string, livepassword string) []User {
 	var users []User
 
-	rows, err := db.Query("SELECT * FROM user WHERE name = ?", name)
+	rows, err := db.Query("SELECT * FROM user WHERE username = ? AND password = ?", liveusername, livepassword)
 	if err != nil {
-		return nil, fmt.Errorf("albumsByArtist %q: %v", name, err)
+		return nil
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var usr User
 		if err := rows.Scan(&usr.Id, &usr.Name, &usr.Username, &usr.Email, &usr.Password, &usr.Created_at); err != nil {
-			return nil, fmt.Errorf("albumsByArtist %q: %v", name, err)
+			return nil
 		}
 		users = append(users, usr)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("albumsByArtist %q: %v", name, err)
+		return nil
 	}
-	return users, nil
+	return users
 }
+
+// func UserByName(name string) ([]User, error) {
+// 	var users []User
+
+// 	rows, err := db.Query("SELECT * FROM user WHERE name = ?", name)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("albumsByArtist %q: %v", name, err)
+// 	}
+// 	defer rows.Close()
+// 	for rows.Next() {
+// 		var usr User
+// 		if err := rows.Scan(&usr.Id, &usr.Name, &usr.Username, &usr.Email, &usr.Password, &usr.Created_at); err != nil {
+// 			return nil, fmt.Errorf("albumsByArtist %q: %v", name, err)
+// 		}
+// 		users = append(users, usr)
+// 	}
+// 	if err := rows.Err(); err != nil {
+// 		return nil, fmt.Errorf("albumsByArtist %q: %v", name, err)
+// 	}
+// 	return users, nil
+// }
